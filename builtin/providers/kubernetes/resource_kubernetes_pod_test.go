@@ -24,8 +24,9 @@ func TestAccKubernetesPod_basic(t *testing.T) {
 	imageName2 := "nginx:1.11"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigBasic(secretName, configMapName, podName, imageName1),
@@ -55,6 +56,29 @@ func TestAccKubernetesPod_basic(t *testing.T) {
 	})
 }
 
+func TestAccKubernetesPod_importBasic(t *testing.T) {
+	resourceName := "kubernetes_pod.test"
+	podName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
+	imageName := "nginx:1.7.9"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccKubernetesPodConfigWithSecurityContext(podName, imageName),
+			},
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"metadata.0.resource_version"},
+			},
+		},
+	})
+}
+
 func TestAccKubernetesPod_with_pod_security_context(t *testing.T) {
 	var conf api.Pod
 
@@ -62,8 +86,9 @@ func TestAccKubernetesPod_with_pod_security_context(t *testing.T) {
 	imageName := "nginx:1.7.9"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithSecurityContext(podName, imageName),
@@ -84,8 +109,9 @@ func TestAccKubernetesPod_with_container_liveness_probe_using_exec(t *testing.T)
 	imageName := "gcr.io/google_containers/busybox"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithLivenessProbeUsingExec(podName, imageName),
@@ -112,8 +138,9 @@ func TestAccKubernetesPod_with_container_liveness_probe_using_http_get(t *testin
 	imageName := "gcr.io/google_containers/liveness"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithLivenessProbeUsingHTTPGet(podName, imageName),
@@ -141,8 +168,9 @@ func TestAccKubernetesPod_with_container_liveness_probe_using_tcp(t *testing.T) 
 	imageName := "gcr.io/google_containers/liveness"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithLivenessProbeUsingTCP(podName, imageName),
@@ -165,8 +193,9 @@ func TestAccKubernetesPod_with_container_lifecycle(t *testing.T) {
 	imageName := "gcr.io/google_containers/liveness"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithLifeCycle(podName, imageName),
@@ -195,8 +224,9 @@ func TestAccKubernetesPod_with_container_security_context(t *testing.T) {
 	imageName := "nginx:1.7.9"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithContainerSecurityContext(podName, imageName),
@@ -218,8 +248,9 @@ func TestAccKubernetesPod_with_volume_mounts(t *testing.T) {
 	imageName := "nginx:1.7.9"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithVolumeMounts(secretName, podName, imageName),
@@ -245,8 +276,9 @@ func TestAccKubernetesPod_with_resource_requirements(t *testing.T) {
 	imageName := "nginx:1.7.9"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithResourceRequirements(podName, imageName),
@@ -270,8 +302,9 @@ func TestAccKubernetesPod_with_empty_dir_volumes(t *testing.T) {
 	imageName := "nginx:1.7.9"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckKubernetesPodDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccKubernetesPodConfigWithEmptyDirVolumes(podName, imageName),
@@ -286,6 +319,25 @@ func TestAccKubernetesPod_with_empty_dir_volumes(t *testing.T) {
 			},
 		},
 	})
+}
+
+func testAccCheckKubernetesPodDestroy(s *terraform.State) error {
+	conn := testAccProvider.Meta().(*kubernetes.Clientset)
+
+	for _, rs := range s.RootModule().Resources {
+		if rs.Type != "kubernetes_pod" {
+			continue
+		}
+		namespace, name := idParts(rs.Primary.ID)
+		resp, err := conn.CoreV1().Pods(namespace).Get(name, metav1.GetOptions{})
+		if err == nil {
+			if resp.Namespace == namespace && resp.Name == name {
+				return fmt.Errorf("Pod still exists: %s: %#v", rs.Primary.ID, resp.Status.Phase)
+			}
+		}
+	}
+
+	return nil
 }
 
 func testAccCheckKubernetesPodExists(n string, obj *api.Pod) resource.TestCheckFunc {
@@ -390,6 +442,7 @@ resource "kubernetes_pod" "test" {
   spec {
     security_context {
       run_as_non_root     = true
+      run_as_user         = 101
       supplemental_groups = [101]
     }
     containers {
@@ -549,8 +602,8 @@ resource "kubernetes_pod" "test" {
       name  = "containername"
 
       security_context {
-        privileged = true
-
+        privileged  = true
+        run_as_user = 1
         se_linux_options {
           level = "s0:c123,c456"
         }

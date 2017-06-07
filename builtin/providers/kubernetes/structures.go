@@ -1,11 +1,10 @@
 package kubernetes
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/url"
 	"strings"
-
-	"encoding/base64"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"k8s.io/apimachinery/pkg/api/resource"

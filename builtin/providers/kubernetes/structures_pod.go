@@ -2,22 +2,19 @@ package kubernetes
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/kubernetes/pkg/api/v1"
-	kubernetes "k8s.io/kubernetes/pkg/client/clientset_generated/clientset"
 )
 
 // Flatteners
 
-func flattenPodSpec(in v1.PodSpec, conn *kubernetes.Clientset, namespace string) ([]interface{}, error) {
+func flattenPodSpec(in v1.PodSpec) ([]interface{}, error) {
 	att := make(map[string]interface{})
 	if in.ActiveDeadlineSeconds != nil {
 		att["active_deadline_seconds"] = *in.ActiveDeadlineSeconds
 	}
-	containers, err := flattenContainers(in.Containers, conn, namespace)
+	containers, err := flattenContainers(in.Containers)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +56,7 @@ func flattenPodSpec(in v1.PodSpec, conn *kubernetes.Clientset, namespace string)
 	}
 
 	if len(in.Volumes) > 0 {
-		v, err := flattenVolumes(in.Volumes, conn, namespace)
+		v, err := flattenVolumes(in.Volumes)
 		if err != nil {
 			return []interface{}{att}, err
 		}
@@ -90,7 +87,11 @@ func flattenPodSecurityContext(in *v1.PodSecurityContext) []interface{} {
 	if in.SELinuxOptions != nil {
 		att["se_linux_options"] = flattenSeLinuxOptions(in.SELinuxOptions)
 	}
-	return []interface{}{att}
+
+	if len(att) > 0 {
+		return []interface{}{att}
+	}
+	return []interface{}{}
 }
 
 func flattenSeLinuxOptions(in *v1.SELinuxOptions) []interface{} {
@@ -110,17 +111,9 @@ func flattenSeLinuxOptions(in *v1.SELinuxOptions) []interface{} {
 	return []interface{}{att}
 }
 
-//volumes excludes the ones internal to k8s
-func flattenVolumes(volumes []v1.Volume, conn *kubernetes.Clientset, namespace string) ([]interface{}, error) {
-	secretList, err := conn.CoreV1().Secrets(namespace).List(metav1.ListOptions{})
-	if err != nil {
-		return nil, err
-	}
-
-	userVolumes := pickUserVolumes(volumes, secretList, namespace)
-
-	att := make([]interface{}, len(userVolumes))
-	for i, v := range userVolumes {
+func flattenVolumes(volumes []v1.Volume) ([]interface{}, error) {
+	att := make([]interface{}, len(volumes))
+	for i, v := range volumes {
 		obj := map[string]interface{}{}
 
 		if v.Name != "" {
@@ -688,37 +681,4 @@ func patchPodSpec(pathPrefix, prefix string, d *schema.ResourceData) (PatchOpera
 	}
 
 	return ops, nil
-}
-
-//Return volumes which were created by user explicitly excluding the volumes created by k8s internally
-func pickUserVolumes(volumes []v1.Volume, secretList *v1.SecretList, namespace string) []v1.Volume {
-	internalVolumes := make(map[string]struct{})
-	possiblyInternalVolumes := make([]string, 0, len(volumes))
-	for _, v := range volumes {
-		if v.Secret != nil && strings.HasPrefix(v.Name, "default-token-") {
-			possiblyInternalVolumes = append(possiblyInternalVolumes, v.Name)
-		}
-	}
-	for _, v := range possiblyInternalVolumes {
-		for _, s := range secretList.Items {
-			if s.Name != v {
-				continue
-			}
-			for key, val := range s.Annotations {
-				if key == "kubernetes.io/service-account.name" && val == "default" {
-					//guarenteed internal volumes
-					internalVolumes[v] = struct{}{}
-				}
-			}
-		}
-	}
-	userVolumes := make([]v1.Volume, 0, len(volumes)-len(internalVolumes))
-	for _, v := range volumes {
-		//Skip the volume which is internal to the k8s
-		if _, ok := internalVolumes[v.Name]; ok {
-			continue
-		}
-		userVolumes = append(userVolumes, v)
-	}
-	return userVolumes
 }
