@@ -40,16 +40,16 @@ func TestAccKubernetesPod_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("kubernetes_pod.test", "metadata.0.resource_version"),
 					resource.TestCheckResourceAttrSet("kubernetes_pod.test", "metadata.0.self_link"),
 					resource.TestCheckResourceAttrSet("kubernetes_pod.test", "metadata.0.uid"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.env.0.value_from.0.secret_key_ref.0.name", secretName),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.env.1.value_from.0.config_map_key_ref.0.name", configMapName),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.image", imageName1),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.env.0.value_from.0.secret_key_ref.0.name", secretName),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.env.1.value_from.0.config_map_key_ref.0.name", configMapName),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.image", imageName1),
 				),
 			},
 			{
 				Config: testAccKubernetesPodConfigBasic(secretName, configMapName, podName, imageName2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.image", imageName2),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.image", imageName2),
 				),
 			},
 		},
@@ -117,14 +117,14 @@ func TestAccKubernetesPod_with_container_liveness_probe_using_exec(t *testing.T)
 				Config: testAccKubernetesPodConfigWithLivenessProbeUsingExec(podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.args.#", "3"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.exec.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.exec.0.command.#", "2"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.exec.0.command.0", "cat"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.exec.0.command.1", "/tmp/healthy"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.failure_threshold", "3"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.initial_delay_seconds", "5"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.args.#", "3"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.exec.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.exec.0.command.#", "2"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.exec.0.command.0", "cat"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.exec.0.command.1", "/tmp/healthy"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.failure_threshold", "3"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.initial_delay_seconds", "5"),
 				),
 			},
 		},
@@ -146,15 +146,15 @@ func TestAccKubernetesPod_with_container_liveness_probe_using_http_get(t *testin
 				Config: testAccKubernetesPodConfigWithLivenessProbeUsingHTTPGet(podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.args.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.http_get.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.http_get.0.path", "/healthz"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.http_get.0.port", "8080"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.http_get.0.http_headers.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.http_get.0.http_headers.0.name", "X-Custom-Header"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.http_get.0.http_headers.0.value", "Awesome"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.initial_delay_seconds", "3"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.args.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.http_get.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.http_get.0.path", "/healthz"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.http_get.0.port", "8080"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.http_get.0.http_header.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.http_get.0.http_header.0.name", "X-Custom-Header"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.http_get.0.http_header.0.value", "Awesome"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.initial_delay_seconds", "3"),
 				),
 			},
 		},
@@ -176,10 +176,10 @@ func TestAccKubernetesPod_with_container_liveness_probe_using_tcp(t *testing.T) 
 				Config: testAccKubernetesPodConfigWithLivenessProbeUsingTCP(podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.args.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.tcp_socket.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.liveness_probe.0.tcp_socket.0.port", "8080"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.args.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.tcp_socket.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.liveness_probe.0.tcp_socket.0.port", "8080"),
 				),
 			},
 		},
@@ -201,16 +201,16 @@ func TestAccKubernetesPod_with_container_lifecycle(t *testing.T) {
 				Config: testAccKubernetesPodConfigWithLifeCycle(podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.post_start.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.post_start.0.exec.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.post_start.0.exec.0.command.#", "2"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.post_start.0.exec.0.command.0", "ls"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.post_start.0.exec.0.command.1", "-al"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.pre_stop.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.pre_stop.0.exec.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.pre_stop.0.exec.0.command.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.lifecycle.0.pre_stop.0.exec.0.command.0", "date"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.post_start.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.post_start.0.exec.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.post_start.0.exec.0.command.#", "2"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.post_start.0.exec.0.command.0", "ls"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.post_start.0.exec.0.command.1", "-al"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.pre_stop.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.pre_stop.0.exec.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.pre_stop.0.exec.0.command.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.lifecycle.0.pre_stop.0.exec.0.command.0", "date"),
 				),
 			},
 		},
@@ -232,14 +232,14 @@ func TestAccKubernetesPod_with_container_security_context(t *testing.T) {
 				Config: testAccKubernetesPodConfigWithContainerSecurityContext(podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.security_context.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.security_context.#", "1"),
 				),
 			},
 		},
 	})
 }
 
-func TestAccKubernetesPod_with_volume_mounts(t *testing.T) {
+func TestAccKubernetesPod_with_volume_mount(t *testing.T) {
 	var conf api.Pod
 
 	podName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
@@ -256,12 +256,12 @@ func TestAccKubernetesPod_with_volume_mounts(t *testing.T) {
 				Config: testAccKubernetesPodConfigWithVolumeMounts(secretName, podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.image", imageName),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.0.mount_path", "/tmp/my_path"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.0.name", "db"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.0.read_only", "false"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.0.sub_path", ""),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.image", imageName),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.0.mount_path", "/tmp/my_path"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.0.name", "db"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.0.read_only", "false"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.0.sub_path", ""),
 				),
 			},
 		},
@@ -284,18 +284,18 @@ func TestAccKubernetesPod_with_resource_requirements(t *testing.T) {
 				Config: testAccKubernetesPodConfigWithResourceRequirements(podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.image", imageName),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.resources.0.requests.0.memory", "50Mi"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.resources.0.requests.0.cpu", "250m"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.resources.0.limits.0.memory", "512Mi"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.resources.0.limits.0.cpu", "500m"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.image", imageName),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.resources.0.requests.0.memory", "50Mi"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.resources.0.requests.0.cpu", "250m"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.resources.0.limits.0.memory", "512Mi"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.resources.0.limits.0.cpu", "500m"),
 				),
 			},
 		},
 	})
 }
 
-func TestAccKubernetesPod_with_empty_dir_volumes(t *testing.T) {
+func TestAccKubernetesPod_with_empty_dir_volume(t *testing.T) {
 	var conf api.Pod
 
 	podName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
@@ -310,11 +310,11 @@ func TestAccKubernetesPod_with_empty_dir_volumes(t *testing.T) {
 				Config: testAccKubernetesPodConfigWithEmptyDirVolumes(podName, imageName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckKubernetesPodExists("kubernetes_pod.test", &conf),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.image", imageName),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.#", "1"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.0.mount_path", "/cache"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.containers.0.volume_mounts.0.name", "cache-volume"),
-					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.volumes.0.empty_dir.0.medium", "Memory"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.image", imageName),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.#", "1"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.0.mount_path", "/cache"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.container.0.volume_mount.0.name", "cache-volume"),
+					resource.TestCheckResourceAttr("kubernetes_pod.test", "spec.0.volume.0.empty_dir.0.medium", "Memory"),
 				),
 			},
 		},
@@ -392,7 +392,7 @@ resource "kubernetes_pod" "test" {
   }
 
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
 
@@ -418,12 +418,12 @@ resource "kubernetes_pod" "test" {
         },
       ]
     }
-    volumes = [{
+    volume {
       name = "db"
       secret = {
         secret_name = "${kubernetes_secret.test.metadata.0.name}"
       }
-    }]
+    }
   }
 }
 	`, secretName, configMapName, podName, imageName)
@@ -445,7 +445,7 @@ resource "kubernetes_pod" "test" {
       run_as_user         = 101
       supplemental_groups = [101]
     }
-    containers {
+    container {
       image = "%s"
       name  = "containername"
     }
@@ -466,7 +466,7 @@ resource "kubernetes_pod" "test" {
   }
 
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
       args  = ["/bin/sh", "-c", "touch /tmp/healthy; sleep 300; rm -rf /tmp/healthy; sleep 600"]
@@ -497,7 +497,7 @@ resource "kubernetes_pod" "test" {
   }
 
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
       args  = ["/server"]
@@ -507,7 +507,7 @@ resource "kubernetes_pod" "test" {
           path = "/healthz"
           port = 8080
 
-          http_headers {
+          http_header {
             name  = "X-Custom-Header"
             value = "Awesome"
           }
@@ -532,7 +532,7 @@ resource "kubernetes_pod" "test" {
     name = "%s"
   }
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
       args  = ["/server"]
@@ -562,7 +562,7 @@ resource "kubernetes_pod" "test" {
     name = "%s"
   }
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
       args  = ["/server"]
@@ -597,7 +597,7 @@ resource "kubernetes_pod" "test" {
     name = "%s"
   }
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
 
@@ -639,20 +639,20 @@ resource "kubernetes_pod" "test" {
   }
 
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
-			volume_mounts = [{
+			volume_mount {
 				mount_path = "/tmp/my_path"
 				name  = "db"
-			}]
+			}
     }
-    volumes = [{
+    volume {
       name = "db"
       secret = {
         secret_name = "${kubernetes_secret.test.metadata.0.name}"
       }
-    }]
+    }
   }
 }
 	`, secretName, podName, imageName)
@@ -671,7 +671,7 @@ resource "kubernetes_pod" "test" {
   }
 
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
 		
@@ -694,7 +694,6 @@ resource "kubernetes_pod" "test" {
 
 func testAccKubernetesPodConfigWithEmptyDirVolumes(podName, imageName string) string {
 	return fmt.Sprintf(`
-
 resource "kubernetes_pod" "test" {
   metadata {
     labels {
@@ -705,21 +704,21 @@ resource "kubernetes_pod" "test" {
   }
 
   spec {
-    containers {
+    container {
       image = "%s"
       name  = "containername"
-		  volume_mounts{
-    	   mount_path =  "/cache"
-         name =  "cache-volume"
-			}
+      volume_mount {
+        mount_path =  "/cache"
+        name =  "cache-volume"
+      }
     }
-		volumes{
-			name = "cache-volume"
-			empty_dir = {
-				medium = "Memory"
-			}
-		}
+    volume {
+      name = "cache-volume"
+      empty_dir = {
+        medium = "Memory"
+      }
+    }
   }
 }
-	`, podName, imageName)
+`, podName, imageName)
 }

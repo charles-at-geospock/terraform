@@ -24,7 +24,7 @@ func handlerFields() map[string]*schema.Schema {
 			Type:        schema.TypeList,
 			Optional:    true,
 			MaxItems:    1,
-			Description: "Specifies the http request to perform..",
+			Description: "Specifies the http request to perform.",
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
 					"host": {
@@ -49,7 +49,7 @@ func handlerFields() map[string]*schema.Schema {
 						ValidateFunc: validatePortNumOrName,
 						Description:  `Name or number of the port to access on the container. Number must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.`,
 					},
-					"http_headers": {
+					"http_header": {
 						Type:        schema.TypeList,
 						Optional:    true,
 						Description: `Scheme to use for connecting to the host.`,
@@ -369,7 +369,7 @@ func containerFields() map[string]*schema.Schema {
 			Required:    true,
 			Description: "Name of the container specified as a DNS_LABEL. Each container in a pod must have a unique name (DNS_LABEL). Cannot be updated.",
 		},
-		"ports": {
+		"port": {
 			Type:        schema.TypeList,
 			Optional:    true,
 			Description: `List of ports to expose from the container. Exposing a port here gives the system additional information about the network connections a container uses, but is primarily informational. Not specifying a port here DOES NOT prevent that port from being exposed. Any port which is listening on the default "0.0.0.0" address inside a container will be accessible from the network. Cannot be updated.`,
@@ -458,7 +458,7 @@ func containerFields() map[string]*schema.Schema {
 			Default:     false,
 			Description: "Whether this container should allocate a TTY for itself",
 		},
-		"volume_mounts": {
+		"volume_mount": {
 			Type:        schema.TypeList,
 			Optional:    true,
 			Description: "Pod volumes to mount into the container's filesystem. Cannot be updated.",

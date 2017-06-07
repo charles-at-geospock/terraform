@@ -114,7 +114,7 @@ func flattenHTTPGet(in *v1.HTTPGetAction) []interface{} {
 	att["port"] = in.Port.String()
 	att["scheme"] = in.Scheme
 	if len(in.HTTPHeaders) > 0 {
-		att["http_headers"] = flattenHTTPHeader(in.HTTPHeaders)
+		att["http_header"] = flattenHTTPHeader(in.HTTPHeaders)
 	}
 
 	return []interface{}{att}
@@ -346,7 +346,7 @@ func flattenContainers(in []v1.Container) ([]interface{}, error) {
 			c["security_context"] = flattenContainerSecurityContext(v.SecurityContext)
 		}
 		if len(v.Ports) > 0 {
-			c["ports"] = flattenContainerPorts(v.Ports)
+			c["port"] = flattenContainerPorts(v.Ports)
 		}
 		if len(v.Env) > 0 {
 			c["env"] = flattenContainerEnvs(v.Env)
@@ -357,7 +357,7 @@ func flattenContainers(in []v1.Container) ([]interface{}, error) {
 			if err != nil {
 				return nil, err
 			}
-			c["volume_mounts"] = volumeMounts
+			c["volume_mount"] = volumeMounts
 		}
 		att[i] = c
 	}
@@ -394,7 +394,7 @@ func expandContainers(ctrs []interface{}) ([]v1.Container, error) {
 			}
 		}
 
-		if v, ok := ctr["ports"].([]interface{}); ok && len(v) > 0 {
+		if v, ok := ctr["port"].([]interface{}); ok && len(v) > 0 {
 			var err error
 			cs[i].Ports, err = expandContainerPort(v)
 			if err != nil {
@@ -440,7 +440,7 @@ func expandContainers(ctrs []interface{}) ([]v1.Container, error) {
 			cs[i].SecurityContext = expandContainerSecurityContext(v)
 		}
 
-		if v, ok := ctr["volume_mounts"].([]interface{}); ok && len(v) > 0 {
+		if v, ok := ctr["volume_mount"].([]interface{}); ok && len(v) > 0 {
 			var err error
 			cs[i].VolumeMounts, err = expandContainerVolumeMounts(v)
 			if err != nil {
@@ -562,7 +562,7 @@ func expandHTTPGet(l []interface{}) *v1.HTTPGetAction {
 		obj.Port = expandPort(v)
 	}
 
-	if v, ok := in["http_headers"].([]interface{}); ok && len(v) > 0 {
+	if v, ok := in["http_header"].([]interface{}); ok && len(v) > 0 {
 		obj.HTTPHeaders = expandHTTPHeaders(v)
 	}
 	return &obj

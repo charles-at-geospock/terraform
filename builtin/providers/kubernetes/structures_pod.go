@@ -18,7 +18,7 @@ func flattenPodSpec(in v1.PodSpec) ([]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	att["containers"] = containers
+	att["container"] = containers
 
 	att["dns_policy"] = in.DNSPolicy
 
@@ -60,7 +60,7 @@ func flattenPodSpec(in v1.PodSpec) ([]interface{}, error) {
 		if err != nil {
 			return []interface{}{att}, err
 		}
-		att["volumes"] = v
+		att["volume"] = v
 	}
 	return []interface{}{att}, nil
 }
@@ -298,7 +298,7 @@ func expandPodSpec(p []interface{}) (v1.PodSpec, error) {
 		obj.ActiveDeadlineSeconds = ptrToInt64(int64(v))
 	}
 
-	if v, ok := in["containers"].([]interface{}); ok && len(v) > 0 {
+	if v, ok := in["container"].([]interface{}); ok && len(v) > 0 {
 		cs, err := expandContainers(v)
 		if err != nil {
 			return obj, err
@@ -359,7 +359,7 @@ func expandPodSpec(p []interface{}) (v1.PodSpec, error) {
 		obj.TerminationGracePeriodSeconds = ptrToInt64(int64(v))
 	}
 
-	if v, ok := in["volumes"].([]interface{}); ok && len(v) > 0 {
+	if v, ok := in["volume"].([]interface{}); ok && len(v) > 0 {
 		cs, err := expandVolumes(v)
 		if err != nil {
 			return obj, err
@@ -662,8 +662,8 @@ func patchPodSpec(pathPrefix, prefix string, d *schema.ResourceData) (PatchOpera
 		})
 	}
 
-	if d.HasChange(prefix + "containers") {
-		containers := d.Get(prefix + "containers").([]interface{})
+	if d.HasChange(prefix + "container") {
+		containers := d.Get(prefix + "container").([]interface{})
 		value, _ := expandContainers(containers)
 
 		for i, v := range value {
