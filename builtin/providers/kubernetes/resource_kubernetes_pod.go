@@ -25,7 +25,7 @@ func resourceKubernetesPod() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 		Schema: map[string]*schema.Schema{
-			"metadata": namespacedMetadataSchema("Pod", true),
+			"metadata": namespacedMetadataSchema("pod", true),
 			"spec": {
 				Type:        schema.TypeList,
 				Description: "Spec of the pod owned by the cluster",
