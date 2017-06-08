@@ -25,6 +25,11 @@ func resourceAwsOpsworksInstance() *schema.Resource {
 			State: resourceAwsOpsworksInstanceImport,
 		},
 
+		Timeouts: &schema.ResourceTimeout{
+			Start: schema.DefaultTimeout(10 * time.Minute),
+			Stop:  schema.DefaultTimeout(10 * time.Minute),
+		},
+
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:     schema.TypeString,
@@ -933,7 +938,7 @@ func startOpsworksInstance(d *schema.ResourceData, meta interface{}, wait bool) 
 			Pending:    []string{"requested", "pending", "booting", "running_setup"},
 			Target:     []string{"online"},
 			Refresh:    OpsworksInstanceStateRefreshFunc(client, instanceId),
-			Timeout:    10 * time.Minute,
+			Timeout:    d.Timeout(schema.TimeoutStart),
 			Delay:      10 * time.Second,
 			MinTimeout: 3 * time.Second,
 		}
@@ -971,7 +976,7 @@ func stopOpsworksInstance(d *schema.ResourceData, meta interface{}, wait bool) e
 			Pending:    []string{"stopping", "terminating", "shutting_down", "terminated"},
 			Target:     []string{"stopped"},
 			Refresh:    OpsworksInstanceStateRefreshFunc(client, instanceId),
-			Timeout:    10 * time.Minute,
+			Timeout:    d.Timeout(schema.TimeoutStop),
 			Delay:      10 * time.Second,
 			MinTimeout: 3 * time.Second,
 		}

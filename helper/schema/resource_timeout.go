@@ -17,6 +17,8 @@ const (
 	TimeoutRead    = "read"
 	TimeoutUpdate  = "update"
 	TimeoutDelete  = "delete"
+	TimeoutStart   = "start"
+	TimeoutStop    = "stop"
 	TimeoutDefault = "default"
 )
 
@@ -26,6 +28,8 @@ func timeoutKeys() []string {
 		TimeoutRead,
 		TimeoutUpdate,
 		TimeoutDelete,
+		TimeoutStart,
+		TimeoutStop,
 		TimeoutDefault,
 	}
 }
@@ -47,7 +51,7 @@ func DefaultTimeout(tx interface{}) *time.Duration {
 }
 
 type ResourceTimeout struct {
-	Create, Read, Update, Delete, Default *time.Duration
+	Create, Read, Update, Delete, Start, Stop, Default *time.Duration
 }
 
 // ConfigDecode takes a schema and the configuration (available in Diff) and
@@ -96,6 +100,10 @@ func (t *ResourceTimeout) ConfigDecode(s *Resource, c *terraform.ResourceConfig)
 						timeout = t.Read
 					case TimeoutDelete:
 						timeout = t.Delete
+					case TimeoutStart:
+						timeout = t.Start
+					case TimeoutStop:
+						timeout = t.Stop
 					case TimeoutDefault:
 						timeout = t.Default
 					}
@@ -154,6 +162,12 @@ func (t *ResourceTimeout) metaEncode(ids interface{}) error {
 	}
 	if t.Delete != nil {
 		m[TimeoutDelete] = t.Delete.Nanoseconds()
+	}
+	if t.Start != nil {
+		m[TimeoutStart] = t.Start.Nanoseconds()
+	}
+	if t.Stop != nil {
+		m[TimeoutStop] = t.Stop.Nanoseconds()
 	}
 	if t.Default != nil {
 		m[TimeoutDefault] = t.Default.Nanoseconds()
@@ -228,6 +242,12 @@ func (t *ResourceTimeout) metaDecode(ids interface{}) error {
 	}
 	if v, ok := times[TimeoutDelete]; ok {
 		t.Delete = DefaultTimeout(v)
+	}
+	if v, ok := times[TimeoutStart]; ok {
+		t.Start = DefaultTimeout(v)
+	}
+	if v, ok := times[TimeoutStop]; ok {
+		t.Stop = DefaultTimeout(v)
 	}
 	if v, ok := times[TimeoutDefault]; ok {
 		t.Default = DefaultTimeout(v)
