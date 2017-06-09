@@ -98,6 +98,8 @@ func TestResourceTimeout_ConfigDecode(t *testing.T) {
 		Timeouts: &ResourceTimeout{
 			Create: DefaultTimeout(10 * time.Minute),
 			Update: DefaultTimeout(5 * time.Minute),
+			Start:  DefaultTimeout(6 * time.Minute),
+			Stop:   DefaultTimeout(7 * time.Minute),
 		},
 	}
 
@@ -110,6 +112,12 @@ func TestResourceTimeout_ConfigDecode(t *testing.T) {
 				},
 				map[string]interface{}{
 					"update": "1m",
+				},
+				map[string]interface{}{
+					"start": "6m",
+				},
+				map[string]interface{}{
+					"stop": "7m",
 				},
 			},
 		})
@@ -127,6 +135,8 @@ func TestResourceTimeout_ConfigDecode(t *testing.T) {
 	expected := &ResourceTimeout{
 		Create: DefaultTimeout(2 * time.Minute),
 		Update: DefaultTimeout(1 * time.Minute),
+		Start:  DefaultTimeout(6 * time.Minute),
+		Stop:   DefaultTimeout(7 * time.Minute),
 	}
 
 	if !reflect.DeepEqual(timeout, expected) {
