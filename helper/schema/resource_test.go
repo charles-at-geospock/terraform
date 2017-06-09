@@ -124,7 +124,7 @@ func TestResourceApply_Timeout_state(t *testing.T) {
 		},
 		Meta: map[string]interface{}{
 			"schema_version": "2",
-			TimeoutKey:       expectedForValues(40, 0, 80, 40, 0),
+			TimeoutKey:       expectedForValues(40, 0, 80, 40, 0, 0, 0),
 		},
 	}
 

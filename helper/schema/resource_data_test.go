@@ -1090,28 +1090,28 @@ func TestResourceDataTimeout(t *testing.T) {
 	}{
 		{
 			Name:     "Basic example default",
-			Rd:       &ResourceData{timeouts: timeoutForValues(10, 3, 0, 15, 0)},
-			Expected: expectedTimeoutForValues(10, 3, 0, 15, 0),
+			Rd:       &ResourceData{timeouts: timeoutForValues(10, 3, 0, 15, 0, 0, 0)},
+			Expected: expectedTimeoutForValues(10, 3, 0, 15, 0, 0, 0),
 		},
 		{
 			Name:     "Resource and config match update, create",
-			Rd:       &ResourceData{timeouts: timeoutForValues(10, 0, 3, 0, 0)},
-			Expected: expectedTimeoutForValues(10, 0, 3, 0, 0),
+			Rd:       &ResourceData{timeouts: timeoutForValues(10, 0, 3, 0, 0, 0, 0)},
+			Expected: expectedTimeoutForValues(10, 0, 3, 0, 0, 0, 0),
 		},
 		{
 			Name:     "Resource provides default",
-			Rd:       &ResourceData{timeouts: timeoutForValues(10, 0, 0, 0, 7)},
-			Expected: expectedTimeoutForValues(10, 7, 7, 7, 7),
+			Rd:       &ResourceData{timeouts: timeoutForValues(10, 0, 0, 0, 0, 0, 7)},
+			Expected: expectedTimeoutForValues(10, 7, 7, 7, 7, 7, 7),
 		},
 		{
 			Name:     "Resource provides default and delete",
-			Rd:       &ResourceData{timeouts: timeoutForValues(10, 0, 0, 15, 7)},
-			Expected: expectedTimeoutForValues(10, 7, 7, 15, 7),
+			Rd:       &ResourceData{timeouts: timeoutForValues(10, 0, 0, 15, 0, 0, 7)},
+			Expected: expectedTimeoutForValues(10, 7, 7, 15, 7, 7, 7),
 		},
 		{
 			Name:     "Resource provides default, config overwrites other values",
-			Rd:       &ResourceData{timeouts: timeoutForValues(10, 3, 0, 0, 13)},
-			Expected: expectedTimeoutForValues(10, 3, 13, 13, 13),
+			Rd:       &ResourceData{timeouts: timeoutForValues(10, 3, 0, 0, 0, 0, 13)},
+			Expected: expectedTimeoutForValues(10, 3, 13, 13, 13, 13, 13),
 		},
 	}
 
@@ -1131,6 +1131,10 @@ func TestResourceDataTimeout(t *testing.T) {
 					ex = c.Expected.Update
 				case TimeoutDelete:
 					ex = c.Expected.Delete
+				case TimeoutStart:
+					ex = c.Expected.Start
+				case TimeoutStop:
+					ex = c.Expected.Stop
 				case TimeoutDefault:
 					ex = c.Expected.Default
 				}
@@ -3165,7 +3169,7 @@ func TestResourceDataSetMeta_Timeouts(t *testing.T) {
 
 	d.timeouts = &rt
 
-	expected := expectedForValues(7, 0, 0, 0, 0)
+	expected := expectedForValues(7, 0, 0, 0, 0, 0, 0)
 
 	actual := d.State()
 	if !reflect.DeepEqual(actual.Meta[TimeoutKey], expected) {

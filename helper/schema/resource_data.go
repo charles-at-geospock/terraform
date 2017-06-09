@@ -352,6 +352,10 @@ func (d *ResourceData) Timeout(key string) time.Duration {
 		timeout = d.timeouts.Read
 	case TimeoutUpdate:
 		timeout = d.timeouts.Update
+	case TimeoutStart:
+		timeout = d.timeouts.Start
+	case TimeoutStop:
+		timeout = d.timeouts.Stop
 	case TimeoutDelete:
 		timeout = d.timeouts.Delete
 	}
